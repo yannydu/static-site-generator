@@ -1,6 +1,6 @@
 import unittest
 
-from splitdelimiter import split_nodes_delimiter
+from inline_markdown import split_nodes_delimiter, extract_markdown_images, extract_markdown_links
 from textnode import TextNode, TextType
 
 class TestSplitDelimiter(unittest.TestCase):
@@ -29,7 +29,7 @@ class TestSplitDelimiter(unittest.TestCase):
             ]
         )
 
-    def text_italics(self):
+    def test_italics(self):
         node = TextNode("This is _an italic_ text", TextType.TEXT)
         new_nodes = split_nodes_delimiter([node], "_", TextType.ITALIC)
         self.assertEqual(
@@ -40,7 +40,28 @@ class TestSplitDelimiter(unittest.TestCase):
                 TextNode(" text", TextType.TEXT)
             ]
         )
-        
+
+    def test_extract_markdown_images(self):
+        text = "This is text with a ![rick roll](https://i.imgur.com/aKaOqIh.gif) and ![obi wan](https://i.imgur.com/fJRm4Vk.jpeg)"
+        images = extract_markdown_images(text)
+        self.assertEqual(
+            images,
+            [
+                ("rick roll", "https://i.imgur.com/aKaOqIh.gif"),
+                ("obi wan", "https://i.imgur.com/fJRm4Vk.jpeg")
+            ]
+        )
+
+    def test_extract_markdown_links(self):
+        text = "This is text with a link [to boot dev](https://www.boot.dev) and [to youtube](https://www.youtube.com/@bootdotdev)"
+        links = extract_markdown_links(text)
+        self.assertEqual(
+            links,
+            [
+                ("to boot dev", "https://www.boot.dev"), 
+                ("to youtube", "https://www.youtube.com/@bootdotdev")
+            ]
+        ) 
 
 if __name__ == "__main__":
     unittest.main()
